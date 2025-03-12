@@ -1,0 +1,45 @@
+// Description:
+// This script automatically sends an email when specific trigger words are entered in Column D of a Google Sheet.
+// The recipient's email is taken from Column A of the same row. The message content is predefined based on the trigger word.
+//
+// How It Works:
+// 1. When a user enters "Are you there", "Bye", or "Hello" in Column D, the script fetches the email from Column A.
+// 2. It checks if the trigger word matches a predefined message.
+// 3. If a match is found, it sends an automated email to the recipient.
+//
+// Tips for Editing:
+// - To add more trigger words, update the 'messages' object with new key-value pairs.
+// - To change the subject of the email, edit the "Automated Response" text in the sendEmail function.
+// - To modify the sender name, update the 'name' field in MailApp.sendEmail.
+// - Ensure the Google Sheets trigger is set to "onEdit" for the script to function properly.
+
+function onEdit(e) {
+  var sheet = e.source.getActiveSheet();
+  var range = e.range;
+  var column = range.getColumn();
+  var row = range.getRow();
+
+  if (column === 4) { // Check if edit is in Column D (4th column)
+    var email = sheet.getRange(row, 1).getValue(); // Get email from Column A
+    var triggerWord = range.getValue();
+    
+    var messages = {
+      "Are you there": "Hello! Just checking in. Let me know if you need anything.",
+      "Bye": "Goodbye! Have a great day!",
+      "Hello": "Hi there! Hope you're doing well."
+    };
+    
+    if (messages[triggerWord]) {
+      sendEmail(email, "Automated Response", messages[triggerWord]);
+    }
+  }
+}
+
+function sendEmail(recipient, subject, body) {
+  MailApp.sendEmail({
+    to: recipient,
+    subject: subject,
+    body: body,
+    name: "Automated System"
+  });
+}
